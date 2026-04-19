@@ -1,0 +1,12 @@
+<mapper namespace="com.yourproject.mall.mapper.UserMapper">
+
+    <select id="findByUsername" resultType="User">
+        select * from user where username = #{username}
+    </select>
+
+    <insert id="insert">
+        insert into user(username,password,role)
+        values(#{username},#{password},#{role})
+    </insert>
+
+</mapper>
