@@ -1,0 +1,15 @@
+一、已经定义了项目的大致结构
+src/main/java/com/example/ecommerce
+│
+├── controller        // 接口层
+├── service           // 业务逻辑
+├── mapper            // MyBatis接口
+├── entity            // 实体类
+├── dto               // 数据传输对象
+├── config            // 配置类
+├── common            // 公共工具类
+└── EcommerceApplication.java
+二、大致定义了实体类
+见entity
+三、user的框架中已经实现两个方法（login register),可以跑通，后续打算添加查询、修改区分用户等系统操作以及添加购买的行为
+
