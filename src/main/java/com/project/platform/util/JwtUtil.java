@@ -12,8 +12,7 @@ import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
-import com.project.platform.util.BaseClass.jwtpayload;
-
+import com.project.platform.DTO.JWTpayload;
 
 @Component
 public class JwtUtil {
@@ -32,7 +31,7 @@ public class JwtUtil {
      * @param payload
      * @return JWT token
     */
-    public String createToken(jwtpayload payload) {
+    public String createToken(JWTpayload payload) {
         try {
             Map<String, Object> headers = new HashMap<>();
             headers.put("typ", "jwt");
@@ -40,8 +39,8 @@ public class JwtUtil {
             return JWT.create()
                     .withHeader(headers)
                     .withIssuer(ISSUER)
-                    .withClaim("id", payload.id)
-                    .withClaim("is_Admin", payload.is_Admin)
+                    .withClaim("id", payload.getId())
+                    .withClaim("isAdmin", payload.isAdmin())
                     .withIssuedAt(new Date(System.currentTimeMillis()))
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME))
                     .sign(algorithm);
@@ -51,20 +50,20 @@ public class JwtUtil {
     }
 
     /**
-     * 验证JWT
+     * 解析JWT
      * @param token
      * @return payload
      * @throws Exception
     */
-    public jwtpayload verifyToken(String token) {
+    public JWTpayload verifyToken(String token) {
         try {
             JWTVerifier verifier = JWT.require(algorithm)
                     .withIssuer(ISSUER)
                     .build();
             DecodedJWT decodedJWT = verifier.verify(token);
-            jwtpayload payload = new jwtpayload();
-            payload.id = decodedJWT.getClaim("id").asInt();
-            payload.is_Admin = decodedJWT.getClaim("is_Admin").asBoolean();
+            JWTpayload payload = new JWTpayload();
+            payload.setId(decodedJWT.getClaim("id").asInt());
+            payload.setAdmin(decodedJWT.getClaim("isAdmin").asBoolean());
             return payload;
 
         } catch (Exception e) {
