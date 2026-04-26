@@ -4,7 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import com.auth0.jwt.JWT;
@@ -13,21 +13,22 @@ import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.platform.DTO.JWTpayload;
+import com.project.platform.config.JwtProperties;
 
 @Component
 public class JwtUtil {
 
-    @Value("${jwt.secret}")
-    private String SECRET;
-    @Value("${jwt.expire-time}")
-    private long EXPIRE_TIME;
-    @Value("${jwt.issuer}")
-    private String ISSUER;
+    @Autowired
+    private JwtProperties jwtProperties;
+
+    private final String SECRET = jwtProperties.getSecret();
+    private final long EXPIRE_TIME = jwtProperties.getExpireTime();
+    private final String ISSUER = jwtProperties.getIssuer();
 
     private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
     
     /**
-     * 创建JWT
+     * 签发JWT
      * @param payload
      * @return JWT token
     */

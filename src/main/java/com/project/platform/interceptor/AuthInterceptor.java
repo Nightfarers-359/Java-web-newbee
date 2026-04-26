@@ -29,6 +29,7 @@ public class AuthInterceptor implements HandlerInterceptor {
             response.sendError(403, "Invalid token");
             return false;
         }
+        //挂载payload
         request.setAttribute("JWTpayload", payload);
         return true;
     }

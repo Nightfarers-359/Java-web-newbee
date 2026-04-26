@@ -9,13 +9,18 @@ import com.project.platform.interceptor.AuthInterceptor;
 
 @Configuration
 public class WebConfig implements WebMvcConfigurer {
+    /**
+     * JWT拦截器，用于验证JWT token
+     * 会挂载payload到request中
+     * 可用于后续的处理
+     */
     @Autowired
     private AuthInterceptor authInterceptor;
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/auth/register");
+                .addPathPatterns("/**") //应用路由
+                .excludePathPatterns("/auth/register"); //排除路由
     }
 }
