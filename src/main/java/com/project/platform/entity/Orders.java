@@ -3,12 +3,16 @@ package com.project.platform.entity;
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
+import lombok.Getter;
+
 
 @TableName("Orders")
 public class Orders {
     @TableId(type = IdType.AUTO)
+    @Getter
     private int id;
-    private int user_id;
+    private int user_buyer_id;
+    private int user_seller_id;
     private int item_id;
     private int quantity;
     private double total_price;
