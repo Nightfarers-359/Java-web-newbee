@@ -27,8 +27,7 @@ CREATE TABLE IF NOT EXISTS Items(
 )
 CREATE TABLE IF NOT EXISTS Orders(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    user_buyer_id INT NOT NULL,
-    user_seller_id INT NOT NULL,
+    user_id INT NOT NULL,
     item_id INT NOT NULL,
     quantity INT NOT NULL,
     total_price DECIMAL(10,2) NOT NULL,
@@ -36,13 +35,6 @@ CREATE TABLE IF NOT EXISTS Orders(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT NULL,
     is_paid BOOLEAN DEFAULT FALSE,
-    FOREIGN KEY (user_buyer_id) REFERENCES Users(id),
-    FOREIGN KEY (user_seller_id) REFERENCES User(id),
+    FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (item_id) REFERENCES Items(id)
-)
-
-CREATE TABLE IF NOT EXISTS Comments(
-    user_buyer_id INT NOT NULL,
-    item_id INT NOT NULL,
-    content TEXT NOT NULL
 )

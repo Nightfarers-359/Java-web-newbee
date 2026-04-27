@@ -4,8 +4,6 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-
 
 import lombok.Data;
 
@@ -13,16 +11,11 @@ import lombok.Data;
 @TableName("Orders")
 public class Orders {
     @TableId(type = IdType.AUTO)
-    @Getter
     private int id;
-    private int user_buyer_id;
-    private int user_seller_id;
-    private int item_id;
     @TableField("user_id")
     private int userId;
     @TableField("item_id")
     private int itemId;
-
     private int quantity;
     @TableField("total_price")
     private double totalPrice;
