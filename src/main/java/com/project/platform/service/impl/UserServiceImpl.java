@@ -24,12 +24,36 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         queryWrapper.eq(User::getUsername, user.getUsername());
 
         long count = this.count(queryWrapper);
-        if(count > 0) {
+        if (count > 0) {
             return false;
         }
 
         user.setPassword(user.getPassword());
 
         return this.save(user);
+    }
+
+    @Override
+    public User getUserByName(String username) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public User getUserByEmail(String email) {
+        // TODO
+        return null;
+    }
+
+    @Override
+    public User getUserByPhone(String phone) {
+        // TODO
+        return null;
     }
 }
