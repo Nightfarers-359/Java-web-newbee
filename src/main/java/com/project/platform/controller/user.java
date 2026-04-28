@@ -1,17 +1,20 @@
 package com.project.platform.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.project.platform.entity.Users;
 import com.project.platform.service.UserService;
-import com.project.platform.service.serviceImp.UserServiceImp;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/user")
 public class user {
     @Autowired
-    private UserServiceImp userService;
-
+    private UserService userService;
+    //路由有问题
     @GetMapping("/")
     public Users getUserById(@RequestParam("id") Long id){
         return userService.getUserById(id);

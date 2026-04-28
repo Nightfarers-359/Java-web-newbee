@@ -1,10 +1,10 @@
 package com.project.platform.service.serviceImp;
 
+import org.springframework.stereotype.Service;
+
 import com.project.platform.entity.Users;
 import com.project.platform.mapper.UserMapper;
 import com.project.platform.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 @Service
 public class UserServiceImp implements UserService {

@@ -1,10 +1,9 @@
 package com.project.platform.service;
 
+import java.util.List;
+
 import com.project.platform.entity.Comments;
 import com.project.platform.entity.Orders;
-import org.springframework.web.bind.annotation.PathVariable;
-
-import java.util.List;
 
 public interface SellerService {
     void addOrderList(Orders order);
