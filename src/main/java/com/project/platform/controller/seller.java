@@ -8,5 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/seller")
 public class Seller {
 
+
     
 }
