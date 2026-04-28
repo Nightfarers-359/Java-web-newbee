@@ -1,1 +1,1 @@
-package com.platform.uitls;
+package com.platform.utils;
