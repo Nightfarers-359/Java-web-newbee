@@ -1,10 +1,14 @@
 package com.project.platform.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import com.project.platform.DTO.RegisterRequestDTO;
 import com.project.platform.entity.*;
 import com.project.platform.service.UserService;
+
+import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/auth")
@@ -22,10 +26,13 @@ public class AuthController {
     }
 
     @PostMapping("/register")
-    public String register(@RequestBody User user) {
-        boolean isSuccess = userService.register(user);
-        return isSuccess ? "Register succeed." : "User already existed.";
-
+    public ResponseEntity<?> register(@Valid @RequestBody RegisterRequestDTO registerRequestDTO) {
+        boolean success = userService.registerWithDTO(registerRequestDTO);
+        if (success) {
+            return ResponseEntity.ok("用户注册成功！");
+        } else {
+            return ResponseEntity.badRequest().body("用户名已存在");
+        }
     }
 
     @GetMapping("/logout")

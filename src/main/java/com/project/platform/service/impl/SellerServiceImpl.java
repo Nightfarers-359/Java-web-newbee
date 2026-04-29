@@ -1,4 +1,4 @@
-package com.project.platform.service.serviceImp;
+package com.project.platform.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.project.platform.entity.Comments;
@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
-public class SellerServiceimp implements SellerService {
+public class SellerServiceImpl implements SellerService {
 
     @Autowired
     private OrdersMapper ordersMapper;
