@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.project.platform.entity.Users;
+import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
 
 @RestController
@@ -14,21 +14,25 @@ import com.project.platform.service.UserService;
 public class user {
     @Autowired
     private UserService userService;
-    //路由有问题
+
+    // 路由有问题
     @GetMapping("/")
-    public Users getUserById(@RequestParam("id") Long id){
+    public User getUserById(@RequestParam("id") Long id) {
         return userService.getUserById(id);
     }
+
     @GetMapping("/")
-    public Users getUserByEmail(@RequestParam("email") String email){
+    public User getUserByEmail(@RequestParam("email") String email) {
         return userService.getUserByEmail(email);
     }
+
     @GetMapping
-    public Users getUserByPhone(@RequestParam("phone") String phone){
+    public User getUserByPhone(@RequestParam("phone") String phone) {
         return userService.getUserByPhone(phone);
     }
+
     @GetMapping("/")
-    public Users getUserByName(@RequestParam("name") String name){
+    public User getUserByName(@RequestParam("name") String name) {
         return userService.getUserByName(name);
     }
 }

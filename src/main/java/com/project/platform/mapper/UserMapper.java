@@ -1,8 +1,10 @@
 package com.project.platform.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.project.platform.entity.Users;
+import com.project.platform.entity.User;
+import org.apache.ibatis.annotations.Mapper;
 
-public interface UserMapper extends BaseMapper<Users> {
-    
+@Mapper
+public interface UserMapper extends BaseMapper<User> {
+
 }
