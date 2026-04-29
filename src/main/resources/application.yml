@@ -1,8 +1,13 @@
 spring:
     application:
         name: platform
+    datasource:
+        driver: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://8.217.56.142:3306/platform?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+        username: dev
+        password: 20250809
 
 jwt:
     secret: 123456
-    expireTime: 1000 * 60 * 60 * 24
+    expireTime: 10800
     issuer: uestc

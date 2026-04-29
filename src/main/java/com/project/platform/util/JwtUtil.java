@@ -18,14 +18,17 @@ import com.project.platform.config.JwtProperties;
 @Component
 public class JwtUtil {
 
-    @Autowired
-    private JwtProperties jwtProperties;
+    private final String SECRET;
+    private final long EXPIRE_TIME;
+    private final String ISSUER;
+    private final Algorithm algorithm;
 
-    private final String SECRET = jwtProperties.getSecret();
-    private final long EXPIRE_TIME = jwtProperties.getExpireTime();
-    private final String ISSUER = jwtProperties.getIssuer();
-
-    private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
+    public JwtUtil(@Autowired JwtProperties jwtProperties) {
+        this.SECRET = jwtProperties.getSecret();
+        this.EXPIRE_TIME = jwtProperties.getExpireTime();
+        this.ISSUER = jwtProperties.getIssuer();
+        this.algorithm= Algorithm.HMAC256(SECRET);
+    }
     
     /**
      * 签发JWT

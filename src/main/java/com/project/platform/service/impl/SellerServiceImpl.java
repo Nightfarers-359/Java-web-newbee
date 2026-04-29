@@ -1,47 +1,48 @@
 package com.project.platform.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.project.platform.entity.Comments;
-import com.project.platform.entity.Orders;
-import com.project.platform.mapper.CommentsMapper;
-import com.project.platform.mapper.OrdersMapper;
-import com.project.platform.service.SellerService;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import com.project.platform.entity.Comment;
+import com.project.platform.entity.Order;
+import com.project.platform.mapper.CommentMapper;
+import com.project.platform.mapper.OrderMapper;
+import com.project.platform.service.SellerService;
 
 @Service
 public class SellerServiceImpl implements SellerService {
 
     @Autowired
-    private OrdersMapper ordersMapper;
+    private OrderMapper orderMapper;
     @Autowired
-    private CommentsMapper commentsMapper;
+    private CommentMapper commentMapper;
 
     @Override
-    public void addOrderList(Orders order){
-        ordersMapper.insert(order);
+    public void addOrderList(Order order){
+        orderMapper.insert(order);
     }
     @Override
-    public void cancelOrderList(Orders order){
-        ordersMapper.deleteById(order.getId());
-    }
-
-    @Override
-    public Orders getOrderListByid(Integer id){
-        return ordersMapper.selectById(id);
+    public void cancelOrderList(Order order){
+        orderMapper.deleteById(order.getId());
     }
 
     @Override
-    public List<Orders> getOrderListByids(Long userid){
-        QueryWrapper<Orders> wrapper = new QueryWrapper<>();
+    public Order getOrderListByid(Integer id){
+        return orderMapper.selectById(id);
+    }
+
+    @Override
+    public List<Order> getOrderListByids(Long userid){
+        QueryWrapper<Order> wrapper = new QueryWrapper<>();
         wrapper.eq("user_id", userid);
 
-        return ordersMapper.selectList(wrapper);
+        return orderMapper.selectList(wrapper);
     }
     @Override
-    public void commentItem(Comments comment){
-        commentsMapper.insert(comment);
+    public void commentItem(Comment comment){
+        commentMapper.insert(comment);
     }
 }

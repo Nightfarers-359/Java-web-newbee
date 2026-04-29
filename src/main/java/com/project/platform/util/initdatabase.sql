@@ -11,7 +11,6 @@ CREATE TABLE IF NOT EXISTS Users(
     phone VARCHAR(255) NOT NULL,
     role VARCHAR(255) NOT NULL,
     is_banned BOOLEAN DEFAULT FALSE,
-
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 CREATE TABLE IF NOT EXISTS Items(
@@ -56,3 +55,5 @@ CREATE TABLE IF NOT EXISTS Comments(
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (item_id) REFERENCES Items(id)
 );
+insert into Users(username, nickname, password, email, phone, role, is_banned)
+values ('admin', 'admin', '123456', 'admin@example.com', '1234567890', 'admin', FALSE);
