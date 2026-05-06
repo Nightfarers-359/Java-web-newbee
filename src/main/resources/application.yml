@@ -6,6 +6,24 @@ spring:
         url: jdbc:mysql://8.217.56.142:3306/platform?useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
         username: dev
         password: 20250809
+    mail:
+        host: smtp.163.com
+        port: 465
+        username: abismo359@163.com
+        password: LFvyfMtrUmL5fRyE
+        properties:
+            mail:
+                smtp:
+                    ssl:
+                        enable: true
+                    auth: true
+        from: abismo359@163.com
+    task:
+        execution:
+            pool:
+                core-size: 10
+                max-size: 20
+                queue-capacity: 50
 
 jwt:
     secret: 123456

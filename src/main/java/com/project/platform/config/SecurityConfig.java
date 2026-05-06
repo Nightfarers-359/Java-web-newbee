@@ -20,10 +20,11 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/auth/**").permitAll() // 所有人都能访问
-                .requestMatchers("/admin/**").hasRole("ADMIN") // 仅管理员
-                .requestMatchers("/merchant/**").hasRole("MERCHANT") // 仅商家
-                .anyRequest().authenticated() // 其他都要登录
+                //暂时停用
+                //.requestMatchers("/auth/**","/auth/sendMailtest").permitAll() // 所有人都能访问
+                //.requestMatchers("/admin/**").hasRole("ADMIN") // 仅管理员
+                //.requestMatchers("/merchant/**").hasRole("MERCHANT") // 仅商家
+                .anyRequest().permitAll() // 其他都要登录
 
                 )
                 .formLogin(form -> form.permitAll())

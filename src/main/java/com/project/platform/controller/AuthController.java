@@ -2,11 +2,17 @@ package com.project.platform.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.project.platform.DTO.RegisterRequestDTO;
-import com.project.platform.entity.*;
+import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
+import com.project.platform.util.MailService;
 
 import jakarta.validation.Valid;
 
@@ -15,6 +21,9 @@ import jakarta.validation.Valid;
 public class AuthController {
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private MailService mailService;
 
     @PostMapping("/login")
     public String login(@RequestParam String username, @RequestParam String password) {
@@ -58,5 +67,11 @@ public class AuthController {
     @GetMapping("/changePassword")
     public String changePassword() {
         return "changePassword";
+    }
+
+    @GetMapping("/sendmailtest")
+    public String sendmailTest() {
+        mailService.sendMailAsync("xxx@qq.com", "test", "test");
+        return "sendmailTest";
     }
 }
