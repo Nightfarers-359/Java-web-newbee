@@ -25,13 +25,13 @@ import lombok.Data;
 
 @Data
 @TableName("Comments")
-public class Comments {
+public class Comment {
     @TableId(type = IdType.AUTO)
-    private int id;
+    private Integer id;
     @TableField("item_id")
-    private int itemId;
+    private Integer itemId;
     @TableField("user_id")
-    private int userId;
+    private Integer userId;
     private String content;
     @TableField("is_hidden")
     private boolean isHidden;

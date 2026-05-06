@@ -4,32 +4,28 @@ import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Getter;
-
 
 import lombok.Data;
 
 @Data
-@TableName("Orders")
-public class Orders {
+@TableName("Items")
+public class Item {
     @TableId(type = IdType.AUTO)
-    @Getter
-    private int id;
-    private int user_buyer_id;
-    private int user_seller_id;
-    private int item_id;
-    @TableField("user_id")
-    private int userId;
-    @TableField("item_id")
-    private int itemId;
-
-    private int quantity;
-    @TableField("total_price")
-    private double totalPrice;
-    @TableField("is_paid")
-    private boolean isPaid;
+    private Integer id;
+    private String name;
+    private String description;
+    private double price;
+    private String category;
+    @TableField("image_url")
+    private String imageUrl;
+    @TableField("is_hidden")
+    private boolean isHidden;
+    @TableField("owner_id")
+    private Integer ownerId;
     @TableField("created_at")
     private java.util.Date createdAt;
     @TableField("updated_at")
     private java.util.Date updatedAt;
+    @TableField("deleted_at")
+    private java.util.Date deletedAt;
 }

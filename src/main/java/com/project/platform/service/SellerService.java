@@ -7,14 +7,14 @@ import org.springframework.web.bind.annotation.PathVariable;
 import java.util.List;
 import java.util.List;
 
-import com.project.platform.entity.Comments;
-import com.project.platform.entity.Orders;
+import com.project.platform.entity.Comment;
+import com.project.platform.entity.Order;
 
 public interface SellerService {
-    void addOrderList(Orders order);
-    void cancelOrderList(Orders order);;
-    Orders getOrderListByid(Integer id);
-    List<Orders> getOrderListByids(Long userid);
-    void commentItem(Comments comment);
+    void addOrderList(Order order);
+    void cancelOrderList(Order order);;
+    Order getOrderListByid(Integer id);
+    List<Order> getOrderListByids(Long userid);
+    void commentItem(Comment comment);
 
 }

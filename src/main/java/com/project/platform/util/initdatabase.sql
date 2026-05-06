@@ -1,16 +1,18 @@
 CREATE DATABASE IF NOT EXISTS platform;
 
+USER platform;
+
 CREATE TABLE IF NOT EXISTS Users(
     id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    nickname VARCHAR(255) NOT NULL,
     password VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL,
     phone VARCHAR(255) NOT NULL,
-    is_admin BOOLEAN DEFAULT FALSE,
+    role VARCHAR(255) NOT NULL,
     is_banned BOOLEAN DEFAULT FALSE,
-    is_seller BOOLEAN DEFAULT FALSE,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-)
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
 CREATE TABLE IF NOT EXISTS Items(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -24,7 +26,7 @@ CREATE TABLE IF NOT EXISTS Items(
     is_hidden BOOLEAN DEFAULT FALSE,
     owner_id INT NOT NULL,
     FOREIGN KEY (owner_id) REFERENCES Users(id)
-)
+);
 CREATE TABLE IF NOT EXISTS Orders(
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_buyer_id INT NOT NULL,
@@ -37,9 +39,9 @@ CREATE TABLE IF NOT EXISTS Orders(
     deleted_at TIMESTAMP DEFAULT NULL,
     is_paid BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_buyer_id) REFERENCES Users(id),
-    FOREIGN KEY (user_seller_id) REFERENCES User(id),
+    FOREIGN KEY (user_seller_id) REFERENCES Users(id),
     FOREIGN KEY (item_id) REFERENCES Items(id)
-)
+);
 
 CREATE TABLE IF NOT EXISTS Comments(
     user_buyer_id INT NOT NULL,
@@ -56,4 +58,7 @@ CREATE TABLE IF NOT EXISTS Comments(
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (item_id) REFERENCES Items(id)
 
-)
+);
+insert into Users(username, nickname, password, email, phone, role, is_banned)
+values ('admin', 'admin', '123456', 'admin@example.com', '1234567890', 'admin', FALSE);
+>>>>>>> 63f95195feed99136897f17474457734da8b2eea
