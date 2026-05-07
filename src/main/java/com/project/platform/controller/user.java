@@ -18,27 +18,86 @@ import com.project.platform.service.UserService;
 @RequestMapping("/user")
 public class user {
     @Autowired
-    private UserServiceImp userService;
     private UserService userService;
 
-    // 路由有问题
+    /**
+     * 用户查看自己
+     */
+    //使用ResponseEntity返回状态码和请求体
+    @GetMapping("/me")
+    public ResponseEntity<?> getCurrentUser(HttpServletRequest request) {
+        JWTpayload payload = getCurrentPayload(request);
+        if (payload == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未认证");
+        }
+        User user = userService.ge)tById(payload.getId();
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("用户不存在");
+        }
+        // 移除密码
+        user.setPassword(null);
+        return ResponseEntity.ok(user);
+    }
+
+    /**
+     * 根据 id 查询用户（管理员可查任意用户，普通用户只能查自己）
+     */
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") Long id) {
-        return userService.getUserById(id);
+    public ResponseEntity<?> getUserById(@PathVariable Long id, HttpServletRequest request) {
+        JWTpayload payload = getCurrentPayload(request);
+        if (payload == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未认证");
+        }
+
+        // 权限校验
+        boolean isAdmin = payload.isAdmin();
+        Long currentUserId = payload.getId();
+        if (!isAdmin && !currentUserId.equals(id)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("无权查看其他用户信息");
+        }
+
+        User user = userService.getById(id);
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("用户不存在");
+        }
+        user.setPassword(null);
+        return ResponseEntity.ok(user);
     }
 
-    @GetMapping("/{email}")
-    public User getUserByEmail(@PathVariable("email") String email) {
-        return userService.getUserByEmail(email);
+    /**
+     * 更新当前用户信息
+     */
+    @PutMapping("/me")
+    public ResponseEntity<?> updateCurrentUser(@Valid @RequestBody UserUpdateDTO updateDTO,
+                                               HttpServletRequest request) {
+        JWTpayload payload = getCurrentPayload(request);
+        if (payload == null) {
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未认证");
+        }
+        User user = userService.getById(payload.getId());
+        if (user == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("用户不存在");
+        }
+        // 更新允许修改的字段
+        if (updateDTO.getNickname() != null) {
+            user.setNickname(updateDTO.getNickname());
+        }
+        if (updateDTO.getPhone() != null) {
+            user.setPhone(updateDTO.getPhone());
+        }
+        boolean updated = userService.updateById(user);
+        if (updated) {
+            User updatedUser = userService.getById(payload.getId());
+            updatedUser.setPassword(null);
+            return ResponseEntity.ok(updatedUser);
+        } else {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("更新失败");
+        }
     }
 
-    @GetMapping("/{phone}")
-    public User getUserByPhone(@PathVariable("phone") String phone) {
-        return userService.getUserByPhone(phone);
+    private JWTpayload getCurrentPayload(HttpServletRequest request) {
+        return (JWTpayload) request.getAttribute("JWTpayload");
     }
+}
 
-    @GetMapping("/{name}")
-    public User getUserByName(@PathVariable("name") String name) {
-        return userService.getUserByName(name);
-    }
 }

@@ -49,26 +49,28 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public User getUserByName(String username) {
-        // TODO
-        return null;
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getUsername, username);
+        return this.getOne(wrapper);
     }
 
     @Override
     public User getUserById(Long id) {
-        // TODO
-        return null;
+        return this.getById(id);
     }
 
     @Override
     public User getUserByEmail(String email) {
-        // TODO
-        return null;
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getEmail, email);
+        return this.getOne(wrapper);
     }
 
     @Override
     public User getUserByPhone(String phone) {
-        // TODO
-        return null;
+        LambdaQueryWrapper<User> wrapper = new LambdaQueryWrapper<>();
+        wrapper.eq(User::getPhone, phone);
+        return this.getOne(wrapper);
     }
 
 }

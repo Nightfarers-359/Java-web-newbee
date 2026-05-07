@@ -7,7 +7,7 @@ import com.project.platform.entity.User;
 public interface UserService extends IService<User> {
     User login(String username, String password);
 
-    boolean registerWithDTO(RegisterRequestDTO registerRequestDTO);
+//    boolean registerWithDTO(RegisterRequestDTO registerRequestDTO);
 
     public User getUserByName(String username);
 
