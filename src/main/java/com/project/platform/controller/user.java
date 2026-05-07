@@ -1,17 +1,24 @@
 package com.project.platform.controller;
 
 import com.project.platform.entity.Users;
-import com.project.platform.service.UserService;
 import com.project.platform.service.serviceImp.UserServiceImp;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
+import com.project.platform.DTO.JWTpayload;
+import com.project.platform.DTO.UserUpdateDTO;
 import com.project.platform.entity.User;
+import com.project.platform.service.UserService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+
+
+
 import com.project.platform.service.UserService;
 
 @RestController
