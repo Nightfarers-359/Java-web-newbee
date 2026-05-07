@@ -18,9 +18,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 
-
-import com.project.platform.service.UserService;
-
 @RestController
 @RequestMapping("/user")
 public class user {
@@ -37,7 +34,7 @@ public class user {
         if (payload == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("未认证");
         }
-        User user = userService.ge)tById(payload.getId();
+        User user = userService.getById(payload.getId());
         if (user == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body("用户不存在");
         }
@@ -105,6 +102,4 @@ public class user {
     private JWTpayload getCurrentPayload(HttpServletRequest request) {
         return (JWTpayload) request.getAttribute("JWTpayload");
     }
-}
-
 }
