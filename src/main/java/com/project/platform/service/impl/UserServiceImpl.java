@@ -2,22 +2,36 @@ package com.project.platform.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.project.platform.DTO.RegisterRequestDTO;
 import com.project.platform.entity.User;
 import com.project.platform.mapper.UserMapper;
 import com.project.platform.service.UserService;
-import com.project.platform.DTO.RegisterRequestDTO;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
     @Override
     public User login(String username, String password) {
         LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
-        queryWrapper.eq(User::getUsername, username)
-                .eq(User::getPassword, password);
+        queryWrapper.eq(User::getUsername, username);
+        User user = this.getOne(queryWrapper);
 
-        return this.getOne(queryWrapper);
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            return user;
+        }
+
+        return null;
     }
 
     @Override
@@ -33,7 +47,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
         User user = new User();
         user.setUsername(registerRequestDTO.getUsername());
-        user.setPassword(registerRequestDTO.getPassword()); // 实际应用中应该进行加密
+        user.setPassword(passwordEncoder.encode(registerRequestDTO.getPassword())); // 使用BCrypt加密密码
         user.setEmail(registerRequestDTO.getEmail());
         user.setNickname(registerRequestDTO.getNickname());
         user.setPhone(registerRequestDTO.getPhone());
@@ -45,15 +59,37 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     }
 
     @Override
+    public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username)
+            throws org.springframework.security.core.userdetails.UsernameNotFoundException {
+        // 在jwt filter里面，传进来的实际上是userId
+        User user = this.getUserById(Long.parseLong(username));
+        if (user == null) {
+            throw new org.springframework.security.core.userdetails.UsernameNotFoundException(
+                    "User not found with id: " + username);
+        }
+
+        // Create authority list from user's role
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.getRole() != null && !user.getRole().trim().isEmpty()) {
+            // SpringSecurity的 `hasRole("ADMIN")` 需要名为 "ROLE_ADMIN"的身份.
+            // 所以这里转换一下
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()));
+        }
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                authorities);
+    }
+
+    @Override
     public User getUserByName(String username) {
-        // TODO
-        return null;
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        return this.getOne(queryWrapper);
     }
 
     @Override
     public User getUserById(Long id) {
-        // TODO
-        return null;
+        return this.getById(id);
     }
 
     @Override

@@ -1,12 +1,5 @@
 package com.project.platform.util;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
-
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
@@ -14,19 +7,29 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.project.platform.DTO.JWTpayload;
 import com.project.platform.config.JwtProperties;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 @Component
 public class JwtUtil {
 
+    private final String SECRET;
+    private final long EXPIRE_TIME;
+    private final String ISSUER;
+    private final Algorithm algorithm;
+
     @Autowired
-    private JwtProperties jwtProperties;
+    public JwtUtil(JwtProperties jwtProperties) {
+        this.SECRET = jwtProperties.getSecret();
+        this.EXPIRE_TIME = jwtProperties.getExpireTime();
+        this.ISSUER = jwtProperties.getIssuer();
+        this.algorithm = Algorithm.HMAC256(this.SECRET);
+    }
 
-    private final String SECRET = jwtProperties.getSecret();
-    private final long EXPIRE_TIME = jwtProperties.getExpireTime();
-    private final String ISSUER = jwtProperties.getIssuer();
-
-    private final Algorithm algorithm = Algorithm.HMAC256(SECRET);
-    
     /**
      * 签发JWT
      * @param payload
@@ -41,6 +44,7 @@ public class JwtUtil {
                     .withHeader(headers)
                     .withIssuer(ISSUER)
                     .withClaim("id", payload.getId())
+                    .withClaim("username", payload.getUsername()) // 把username加入payload
                     .withClaim("isAdmin", payload.isAdmin())
                     .withIssuedAt(new Date(System.currentTimeMillis()))
                     .withExpiresAt(new Date(System.currentTimeMillis() + EXPIRE_TIME))
@@ -64,6 +68,7 @@ public class JwtUtil {
             DecodedJWT decodedJWT = verifier.verify(token);
             JWTpayload payload = new JWTpayload();
             payload.setId(decodedJWT.getClaim("id").asInt());
+            payload.setUsername(decodedJWT.getClaim("username").asString()); 
             payload.setAdmin(decodedJWT.getClaim("isAdmin").asBoolean());
             return payload;
 
@@ -71,6 +76,4 @@ public class JwtUtil {
             throw e;
         }
     }
-
-    
 }
