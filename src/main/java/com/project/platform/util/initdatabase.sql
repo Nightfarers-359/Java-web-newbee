@@ -55,5 +55,3 @@ CREATE TABLE IF NOT EXISTS Comments(
     FOREIGN KEY (user_id) REFERENCES Users(id),
     FOREIGN KEY (item_id) REFERENCES Items(id)
 );
-insert into Users(username, nickname, password, email, phone, role, is_banned)
-values ('admin', 'admin', '123456', 'admin@example.com', '1234567890', 'admin', FALSE);

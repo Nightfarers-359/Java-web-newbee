@@ -1,20 +1,18 @@
 package com.project.platform.controller;
 
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
-
+import com.project.platform.DTO.JWTpayload;
 import com.project.platform.DTO.RegisterRequestDTO;
 import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
+import com.project.platform.util.JwtUtil;
 import com.project.platform.util.MailService;
-
 import jakarta.validation.Valid;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.HashMap;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/auth")
@@ -23,15 +21,31 @@ public class AuthController {
     private UserService userService;
 
     @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
     private MailService mailService;
 
     @PostMapping("/login")
-    public String login(@RequestParam String username, @RequestParam String password) {
+    public ResponseEntity<?> login(@RequestParam String username,
+            @RequestParam String password) {
         User user = userService.login(username, password);
         if (user != null) {
-            return "Login succeed, user id: " + user.getId() + ".";
+            JWTpayload payload = new JWTpayload();
+            // UserId是个Long, 但是jwtpayload要求int
+            // 可能需要改
+            payload.setId(user.getId().intValue());
+            payload.setUsername(user.getUsername());
+            // 临时处理职责，后续解决
+            payload.setAdmin("admin".equalsIgnoreCase(user.getRole()));
+
+            String token = jwtUtil.createToken(payload);
+
+            Map<String, String> result = new HashMap<>();
+            result.put("token", token);
+            return ResponseEntity.ok(result);
         }
-        return "User name or password error.";
+        return ResponseEntity.status(401).body("User name or password error.");
     }
 
     @PostMapping("/register")
