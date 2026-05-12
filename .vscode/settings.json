@@ -1,7 +1,0 @@
-{
-    "explorer.compactFolders": true,
-    "java.compile.nullAnalysis.mode": "automatic",
-    "java.configuration.updateBuildConfiguration": "interactive",
-    "workbench.colorTheme": "Dark Modern",
-    "workbench.preferredDarkColorTheme": "Dark Modern"
-}
