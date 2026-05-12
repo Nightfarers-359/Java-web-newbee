@@ -21,7 +21,6 @@ public class JwtUtil {
     private final long EXPIRE_TIME;
     private final String ISSUER;
     private final Algorithm algorithm;
-
     @Autowired
     public JwtUtil(JwtProperties jwtProperties) {
         this.SECRET = jwtProperties.getSecret();
@@ -29,7 +28,6 @@ public class JwtUtil {
         this.ISSUER = jwtProperties.getIssuer();
         this.algorithm = Algorithm.HMAC256(this.SECRET);
     }
-
     /**
      * 签发JWT
      * @param payload

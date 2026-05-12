@@ -9,6 +9,7 @@ import com.project.platform.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -60,11 +61,11 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Override
     public org.springframework.security.core.userdetails.UserDetails loadUserByUsername(String username)
-            throws org.springframework.security.core.userdetails.UsernameNotFoundException {
+            throws UsernameNotFoundException {
         // 在jwt filter里面，传进来的实际上是userId
         User user = this.getUserById(Long.parseLong(username));
         if (user == null) {
-            throw new org.springframework.security.core.userdetails.UsernameNotFoundException(
+            throw new UsernameNotFoundException(
                     "User not found with id: " + username);
         }
 

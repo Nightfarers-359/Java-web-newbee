@@ -5,6 +5,7 @@ import com.project.platform.DTO.RegisterRequestDTO;
 import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
 import com.project.platform.util.JwtUtil;
+import com.project.platform.util.MailService;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,9 @@ public class AuthController {
 
     @Autowired
     private JwtUtil jwtUtil;
+
+    @Autowired
+    private MailService mailService;
 
     @PostMapping("/login")
     public ResponseEntity<?> login(@RequestParam String username,
@@ -77,5 +81,11 @@ public class AuthController {
     @GetMapping("/changePassword")
     public String changePassword() {
         return "changePassword";
+    }
+
+    @GetMapping("/sendmailtest")
+    public String sendmailTest() {
+        mailService.sendMailAsync("xxx@qq.com", "test", "test");
+        return "sendmailTest";
     }
 }

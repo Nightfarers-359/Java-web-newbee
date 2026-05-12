@@ -1,8 +1,8 @@
 package com.project.platform.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
-import com.project.platform.entity.User;
 import com.project.platform.DTO.RegisterRequestDTO;
+import com.project.platform.entity.User;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 public interface UserService extends IService<User>, UserDetailsService {
@@ -18,4 +18,3 @@ public interface UserService extends IService<User>, UserDetailsService {
 
     User getUserByPhone(String phone);
 }
-
