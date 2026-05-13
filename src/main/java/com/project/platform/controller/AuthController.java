@@ -58,30 +58,53 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/logout")
-    public String logout() {
-        return "logout";
+    // @GetMapping("/logout")
+    // public String logout() {
+    // return "logout";
+    // }
+    // 客户端本地删除token即可，后续可以考虑添加禁用Refresh Token的功能
+
+    @PostMapping("/admin/grant")
+    public ResponseEntity<?> grantAdminRole(@RequestParam Long userId) {
+        boolean success = userService.grantAdminRole(userId);
+        if (success) {
+            return ResponseEntity.ok("User " + userId + " has been granted admin role.");
+        } else {
+            return ResponseEntity.badRequest().body("User not found or already an admin.");
+        }
     }
 
-    @GetMapping("/admin")
-    public String admin() {
-        return "admin";
+    @PostMapping("/admin/ban/{userId}")
+    public ResponseEntity<?> banUser(@PathVariable Long userId) {
+        boolean success = userService.banUser(userId);
+        if (success) {
+            return ResponseEntity.ok("User " + userId + " has been banned.");
+        } else {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
     }
 
-    @GetMapping("/ban")
-    public String ban() {
-        return "ban";
+    @PostMapping("/admin/unban/{userId}")
+    public ResponseEntity<?> unbanUser(@PathVariable Long userId) {
+        boolean success = userService.unbanUser(userId);
+        if (success) {
+            return ResponseEntity.ok("User " + userId + " has been unbanned.");
+        } else {
+            return ResponseEntity.badRequest().body("User not found.");
+        }
     }
 
-    @GetMapping("/refresh")
-    public String refresh() {
-        return "refresh";
-    }
+    // @GetMapping("/refresh")
+    // public String refresh() {
+    // return "refresh";
+    // }
+    // 同上，目前没添加Refresh Token
 
-    @GetMapping("/changePassword")
-    public String changePassword() {
-        return "changePassword";
-    }
+    // @GetMapping("/changePassword")
+    // public String changePassword() {
+    // return "changePassword";
+    // }
+    // 已在UserController中实现
 
     @GetMapping("/sendmailtest")
     public String sendmailTest() {

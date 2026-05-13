@@ -24,7 +24,8 @@ public class SecurityConfig {
     }
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration)
+            throws Exception {
         return authenticationConfiguration.getAuthenticationManager();
     }
 
@@ -34,7 +35,19 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll() // 所有人都能访问
+                        .requestMatchers(
+                                "/swagger-ui/**",
+                                "/swagger-ui.html",
+                                "/v3/api-docs/**",
+                                "/swagger-resources/**",
+                                "/webjars/**")
+                        .permitAll() // 允许访问Swagger相关的URL，之后应该会禁止
+
+                        .requestMatchers("/auth/**",
+                                "/login/**",
+                                "/register/**"
+
+                        ).permitAll() // 所有人都能访问
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 仅管理员
                         .requestMatchers("/merchant/**").hasRole("MERCHANT") // 仅商家
                         .anyRequest().authenticated() // 其他都要登录
