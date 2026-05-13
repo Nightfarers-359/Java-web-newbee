@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class JWTpayload {
-    private int id;
+    private Long id;
     private boolean admin;
 }

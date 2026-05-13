@@ -1,7 +1,7 @@
 package com.project.platform.service;
 
-import com.project.platform.entity.Comments;
-import com.project.platform.entity.Orders;
+import com.project.platform.entity.Comment;
+import com.project.platform.entity.Order;
 import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
