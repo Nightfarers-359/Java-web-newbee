@@ -1,6 +1,6 @@
 package com.project.platform.entity;
 
-import java.util.Date;
+import java.sql.Date;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableField;

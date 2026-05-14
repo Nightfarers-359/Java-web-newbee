@@ -65,6 +65,7 @@ public class JwtUtil {
                     .build();
             DecodedJWT decodedJWT = verifier.verify(token);
             JWTpayload payload = new JWTpayload();
+
             payload.setId(decodedJWT.getClaim("id").asInt());
             payload.setUsername(decodedJWT.getClaim("username").asString()); 
             payload.setAdmin(decodedJWT.getClaim("isAdmin").asBoolean());

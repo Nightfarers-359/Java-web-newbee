@@ -1,6 +1,6 @@
-CREATE DATABASE IF NOT EXISTS platform;
+CREATE DATABASE IF NOT EXISTS platform CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 
-USER platform;
+USE platform;
 
 CREATE TABLE IF NOT EXISTS Users(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -12,7 +12,8 @@ CREATE TABLE IF NOT EXISTS Users(
     role VARCHAR(255) NOT NULL,
     is_banned BOOLEAN DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS Items(
     id INT AUTO_INCREMENT PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
@@ -25,8 +26,10 @@ CREATE TABLE IF NOT EXISTS Items(
     deleted_at TIMESTAMP DEFAULT NULL,
     is_hidden BOOLEAN DEFAULT FALSE,
     owner_id INT NOT NULL,
-    FOREIGN KEY (owner_id) REFERENCES Users(id)
-);
+    FOREIGN KEY (owner_id) REFERENCES Users(id),
+    INDEX idx_owner_id (owner_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 CREATE TABLE IF NOT EXISTS Orders(
     id INT AUTO_INCREMENT PRIMARY KEY,
     user_buyer_id INT NOT NULL,
@@ -40,8 +43,11 @@ CREATE TABLE IF NOT EXISTS Orders(
     is_paid BOOLEAN DEFAULT FALSE,
     FOREIGN KEY (user_buyer_id) REFERENCES Users(id),
     FOREIGN KEY (user_seller_id) REFERENCES Users(id),
-    FOREIGN KEY (item_id) REFERENCES Items(id)
-);
+    FOREIGN KEY (item_id) REFERENCES Items(id),
+    INDEX idx_buyer (user_buyer_id),
+    INDEX idx_seller (user_seller_id),
+    INDEX idx_item (item_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE IF NOT EXISTS Comments(
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -53,5 +59,9 @@ CREATE TABLE IF NOT EXISTS Comments(
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     deleted_at TIMESTAMP DEFAULT NULL,
     FOREIGN KEY (user_id) REFERENCES Users(id),
-    FOREIGN KEY (item_id) REFERENCES Items(id)
-);
+    FOREIGN KEY (item_id) REFERENCES Items(id),
+    INDEX idx_user (user_id),
+    INDEX idx_item (item_id)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+
