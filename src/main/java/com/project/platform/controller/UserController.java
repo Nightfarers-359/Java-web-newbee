@@ -17,49 +17,42 @@ import com.project.platform.DTO.UpdateUserDTO;
 import com.project.platform.DTO.UserResponseDTO;
 import com.project.platform.common.Result;
 import com.project.platform.service.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.platform.DTO.ChangePasswordDTO;
+import com.project.platform.entity.User;
+import com.project.platform.service.UserService;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 @RestController
-@RequestMapping("/api/users")
+@RequestMapping("/user")
 public class UserController {
 
-    @Autowired
-    private UserService userService;
+    private final UserService userService;
 
-    /**
-     * 用户注册
-     * 接口地址：POST /api/users/register
-     */
-    @PostMapping("/register")
-    public Result<UserResponseDTO> register(@RequestBody RegisterRequestDTO registerRequest) {
-        // 调用 Service 层处理注册逻辑
-        UserResponseDTO user = userService.register(registerRequest);
-        return Result.success("注册成功", user);
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
-
-    /**
-     * 用户登录
-     * 接口地址：POST /api/users/login
-     */
-    @PostMapping("/login")
-    public Result<LoginResponseDTO> login(@RequestBody LoginRequestDTO loginRequest) {
-        // 调用 Service 层处理登录逻辑，返回 Token 和用户信息
-        LoginResponseDTO loginResponse = userService.login(loginRequest);
-        return Result.success("登录成功", loginResponse);
-    }
-
     /**
      * 获取用户详情
-     * 接口地址：GET /api/users/{id}
-     * @PathVariable 用于接收 URL 路径中的参数（例如 /api/users/1001）
+     * 接口地址：GET /user/{id}
+     * @PathVariable 用于接收 URL 路径中的参数（users/id）
      */
     @GetMapping("/{id}")
     public Result<UserResponseDTO> getUserInfo(@PathVariable Long id) {
         UserResponseDTO user = userService.getUserInfoById(id);
         return Result.success("获取成功", user);
     }
-
-    /**
-     * 4. 更新用户信息
+  
+     /**
+     * 更新用户信息
      * 接口地址：PUT /api/users/{id}
      * 同时使用了 @PathVariable 接收 ID，@RequestBody 接收前端传来的更新字段
      */
@@ -71,16 +64,30 @@ public class UserController {
         UserResponseDTO updatedUser = userService.updateUserInfo(id, updateRequest);
         return Result.success("更新成功", updatedUser);
     }
+  
+  
 
-    /**
-     * 5. 用户登出
-     * 接口地址：POST /api/users/logout
-     * 登出通常需要将 Token 放入请求头（Header）中传给后端
-     */
-    @PostMapping("/logout")
-    public Result<Void> logout(@RequestHeader("Authorization") String token) {
-        // 如果前端传的是 "Bearer xxxxx"，通常需要截取一下，这里假设直接传 token 或已处理
-        userService.logout(token);
-        return Result.success("登出成功", null);
+    @PostMapping("/password")
+    public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDTO dto) {
+        // 此处可添加 JSR-303 参数校验，例如 @Valid
+        userService.changePassword(dto);
+        return ResponseEntity.ok("密码修改成功");
     }
+
+    // 请求示例: GET /user?email=iam@yourdad.com
+    // 请求示例: GET /user?phone=13866668888
+    @GetMapping
+    @PreAuthorize("hasRole('ADMIN')") // 确保仅管理员可以调用
+    public User getUser(@RequestParam(required = false) Long id,
+            @RequestParam(required = false) String email,
+            @RequestParam(required = false) String phone) {
+        if (id != null)
+            return userService.getUserById(id);
+        if (email != null)
+            return userService.getUserByEmail(email);
+        if (phone != null)
+            return userService.getUserByPhone(phone);
+        throw new IllegalArgumentException("必须提供查询参数");
+    }
+
 }

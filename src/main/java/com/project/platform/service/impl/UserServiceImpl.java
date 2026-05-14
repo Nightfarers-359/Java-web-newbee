@@ -17,6 +17,9 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.project.platform.DTO.JWTpayload;
 import com.project.platform.DTO.LoginRequestDTO;
 import com.project.platform.DTO.LoginResponseDTO;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.project.platform.DTO.ChangePasswordDTO;
 import com.project.platform.DTO.RegisterRequestDTO;
 import com.project.platform.DTO.UpdateUserDTO;
 import com.project.platform.DTO.UserResponseDTO;
@@ -24,77 +27,48 @@ import com.project.platform.entity.User;
 import com.project.platform.mapper.UserMapper;
 import com.project.platform.service.UserService;
 import com.project.platform.util.JwtUtil;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 @Service
 public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements UserService {
-
-    @Autowired
-    private UserMapper userMapper;
-
     @Autowired
     private PasswordEncoder passwordEncoder;
+    private UserMapper userMapper;
 
-    @Autowired
-    private JwtUtil jwtUtil; // 注入JwtUtil
+    public UserServiceImpl(PasswordEncoder passwordEncoder, UserMapper userMapper) {
+        this.passwordEncoder = passwordEncoder;
+        this.userMapper = userMapper;
+    }
 
-
-    //注册
     @Override
-    public UserResponseDTO register(RegisterRequestDTO registerRequest) {
-        //检查唯一性
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", registerRequest.getUsername())
-                   .or().eq("email", registerRequest.getEmail());
-        if (getOne(queryWrapper) != null) {
-            throw new RuntimeException("用户名或邮箱已存在");
+    public User login(String username, String password) {
+        LambdaQueryWrapper<User> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(User::getUsername, username);
+        User user = this.getOne(queryWrapper);
+
+        if (user != null && passwordEncoder.matches(password, user.getPassword())) {
+            if (user.getIsBanned()) {
+                throw new RuntimeException("用户被封禁");
+            }
+            return user;
         }
 
-        //构建用户实体
-        User user = new User();
-        //DTO转换成Entity
-        BeanUtils.copyProperties(registerRequest, user);
-        //密码加密
-        user.setPassword(passwordEncoder.encode(registerRequest.getPassword()));
-        //设置默认值
-        user.setRole("USER"); // 默认普通用户
-        user.setIsBanned(false);
-        user.setCreatedAt(new Date());
-
-        save(user);
-
-        return new UserResponseDTO(user);
+        return null;
     }
 
 
-    //登录
-    @Override
-    public LoginResponseDTO login(LoginRequestDTO loginRequest) {
-        //查询用户
-        QueryWrapper<User> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("username", loginRequest.getEmailorname())
-                   .or().eq("email", loginRequest.getEmailorname());
-        User user = getOne(queryWrapper);
-
-        if (user == null) {
-            throw new RuntimeException("用户不存在");
-        }
-
-        //校验密码
-        if (!passwordEncoder.matches(loginRequest.getPassword(), user.getPassword())) {
-            throw new RuntimeException("密码错误");
-        }
-
-        //生成 Token(jwt,JWTpayload)
-        JWTpayload payload = new JWTpayload();
-        payload.setId(user.getId());
-        payload.setAdmin(Objects.equals(user.getRole(), "ADMIN")); // Role 为 "ADMIN" 字符串
-        
-        String token = jwtUtil.createToken(payload);
-
-        //构建响应
-        UserResponseDTO userInfo = new UserResponseDTO(user);
-        return new LoginResponseDTO(token, userInfo);
-    }
 
     @Override
     public UserResponseDTO getUserInfoById(Long id) {
@@ -103,16 +77,91 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("用户不存在");
         }
         return new UserResponseDTO(user);
-    }
-
-
-    //退出登录
+      
+    @Transactional(rollbackFor = Exception.class) // 避免出错后发生数据库不同步的问题
     @Override
-    public void logout(String token) {
-        // TODO
+    public boolean changePassword(ChangePasswordDTO dto) {
+        String username = getCurrentUsername();
+        User user = this.getUserByName(username);
+        if (user == null) {
+            throw new UsernameNotFoundException("用户 '" + username + "' 不存在");
+        }
+
+        if (!passwordEncoder.matches(dto.getOldPassword(), user.getPassword())) {
+            throw new IllegalArgumentException("旧密码错误");
+        }
+
+        String encodedNewPassword = passwordEncoder.encode(dto.getNewPassword());
+        user.setPassword(encodedNewPassword);
+
+        // 使用ServiceImpl提供的updateById方法，其返回值为boolean
+        return this.updateById(user);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username)
+            throws UsernameNotFoundException {
+        // 在jwt filter里面，传进来的实际上是userId
+        User user = this.getUserById(Long.parseLong(username));
+        if (user == null) {
+            throw new UsernameNotFoundException(
+                    "User not found with id: " + username);
+        }
+        if (user.getIsBanned()) {
+            throw new UsernameNotFoundException(
+                    "User with id: " + username + " is banned.");
+        }
+
+        // Create authority list from user's role
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        if (user.getRole() != null && !user.getRole().trim().isEmpty()) {
+            // SpringSecurity的 `hasRole("ADMIN")` 需要名为 "ROLE_ADMIN"的身份.
+            // 所以这里转换一下
+            authorities.add(new SimpleGrantedAuthority("ROLE_" + user.getRole().toUpperCase()));
+        }
+
+        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(),
+                authorities);
     }
 
 
+
+
+       @Override
+    public boolean grantAdminRole(Long userId) {
+        User user = this.getById(userId);
+        if (user != null) {
+            user.setRole("admin");
+            return this.updateById(user);
+        }
+        return false;
+    }
+      
+      
+       @Override
+    public boolean banUser(Long userId) {
+        User user = this.getById(userId);
+        if (user != null) {
+            user.setIsBanned(true);
+            return this.updateById(user);
+        }
+        return false;
+    }
+      
+      
+      
+    @Override
+    public boolean unbanUser(Long userId) {
+        User user = this.getById(userId);
+        if (user != null) {
+            user.setIsBanned(false);
+            return this.updateById(user);
+        }
+        return false;
+    }
+      
+      
+      
     //更新用户信息
     @Override
 public UserResponseDTO updateUserInfo(Long id, UpdateUserDTO updateRequest) {
@@ -120,8 +169,6 @@ public UserResponseDTO updateUserInfo(Long id, UpdateUserDTO updateRequest) {
     User user = this.getById(id);
     if (user == null) {
         throw new RuntimeException("用户不存在，无法更新");
-    }
-
     //检查更新后的用户名或邮箱是否与其他用户冲突
     if (updateRequest.getUsername() != null || updateRequest.getEmail() != null) {
         QueryWrapper<User> queryWrapper = new QueryWrapper<>();

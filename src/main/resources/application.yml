@@ -26,6 +26,6 @@ spring:
                 queue-capacity: 50
 
 jwt:
-    secret: 123456
-    expireTime: 10800
+    secret: ${JWT_SECRET:a-very-long-and-secure-secret-for-development-use-only-六六六}
+    expireTime: 86400000
     issuer: uestc

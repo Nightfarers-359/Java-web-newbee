@@ -64,5 +64,4 @@ CREATE TABLE IF NOT EXISTS Comments(
     INDEX idx_item (item_id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-INSERT INTO Users(username, nickname, password, email, phone, role, is_banned)
-VALUES ('admin', 'admin', '123456', 'admin@example.com', '1234567890', 'admin', FALSE);
+
