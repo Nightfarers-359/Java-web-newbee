@@ -44,10 +44,8 @@ public class SecurityConfig {
                         .permitAll() // 允许访问Swagger相关的URL，之后应该会禁止
 
                         .requestMatchers("/auth/**",
-                                "/login/**",
-                                "/register/**"
-
-                        ).permitAll() // 所有人都能访问
+                                "/user/**")
+                        .permitAll() // 所有人都能访问
                         .requestMatchers("/admin/**").hasRole("ADMIN") // 仅管理员
                         .requestMatchers("/merchant/**").hasRole("MERCHANT") // 仅商家
                         .anyRequest().authenticated() // 其他都要登录
