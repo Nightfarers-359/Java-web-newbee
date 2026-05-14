@@ -48,4 +48,14 @@ public class UserController {
             return userService.getUserByPhone(phone);
         throw new IllegalArgumentException("必须提供查询参数");
     }
+
+    @GetMapping("/id/{username}")
+    public ResponseEntity<Long> getUserIdByUsername(@PathVariable String username) {
+        User user = userService.getUserByName(username);
+        if (user != null) {
+            return ResponseEntity.ok(user.getId());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }
