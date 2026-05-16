@@ -36,7 +36,6 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
 
     @Autowired
     private PasswordEncoder passwordEncoder;
-    private UserMapper userMapper;
 
     enum Role {
         USER,
@@ -44,9 +43,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         ADMIN
     }
 
-    public UserServiceImpl(PasswordEncoder passwordEncoder, UserMapper userMapper) {
+    public UserServiceImpl(PasswordEncoder passwordEncoder) {
         this.passwordEncoder = passwordEncoder;
-        this.userMapper = userMapper;
     }
 
     @Override
