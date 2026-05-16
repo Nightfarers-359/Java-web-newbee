@@ -5,33 +5,21 @@ import java.util.List;
 
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestHeader;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import com.project.platform.DTO.LoginRequestDTO;
-import com.project.platform.DTO.LoginResponseDTO;
-import com.project.platform.DTO.RegisterRequestDTO;
-import com.project.platform.DTO.UpdateUserDTO;
-import com.project.platform.DTO.UserResponseDTO;
-import com.project.platform.common.Result;
-import com.project.platform.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.project.platform.DTO.ChangePasswordDTO;
+import com.project.platform.DTO.UpdateUserDTO;
+import com.project.platform.DTO.UserResponseDTO;
+import com.project.platform.common.Result;
 import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
 import com.project.platform.util.HdfsUtil;
@@ -98,13 +86,17 @@ public class UserController {
         throw new IllegalArgumentException("必须提供查询参数");
     }
 
-    @GetMapping("/id/{username}")
-    public ResponseEntity<Long> getUserIdByUsername(@PathVariable String username) {
-        User user = userService.getUserByName(username);
-        if (user != null) {
-            return ResponseEntity.ok(user.getId());
-        } else {
-            return ResponseEntity.notFound().build();
+    @GetMapping("/hadooptest")
+    public String listFiles() throws IOException {
+        try {
+            List<LocatedFileStatus> fileList = hdfsUtil.listFiles("/");
+            StringBuilder sb = new StringBuilder();
+            for (LocatedFileStatus file : fileList) {
+                sb.append("文件路径：").append(file.getPath()).append("<br/>");
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            return "查询失败：" + e.getMessage();
         }
     }
 }
