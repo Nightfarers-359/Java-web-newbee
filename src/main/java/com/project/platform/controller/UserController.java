@@ -5,6 +5,22 @@ import java.util.List;
 
 import org.apache.hadoop.fs.LocatedFileStatus;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.project.platform.DTO.LoginRequestDTO;
+import com.project.platform.DTO.LoginResponseDTO;
+import com.project.platform.DTO.RegisterRequestDTO;
+import com.project.platform.DTO.UpdateUserDTO;
+import com.project.platform.DTO.UserResponseDTO;
+import com.project.platform.common.Result;
+import com.project.platform.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,9 +48,34 @@ public class UserController {
 
     @Autowired
     private HdfsUtil hdfsUtil;
+    /**
+     * 获取用户详情
+     * 接口地址：GET /user/{id}
+     * @PathVariable 用于接收 URL 路径中的参数（users/id）
+     */
+    @GetMapping("/{id}")
+    public Result<UserResponseDTO> getUserInfo(@PathVariable Long id) {
+        UserResponseDTO user = userService.getUserInfoById(id);
+        return Result.success("获取成功", user);
+    }
+  
+     /**
+     * 更新用户信息
+     * 接口地址：PUT /api/users/{id}
+     * 同时使用了 @PathVariable 接收 ID，@RequestBody 接收前端传来的更新字段
+     */
+    @PutMapping("/{id}")
+    public Result<UserResponseDTO> updateUserInfo(
+            @PathVariable Long id, 
+            @RequestBody UpdateUserDTO updateRequest) {
+        
+        UserResponseDTO updatedUser = userService.updateUserInfo(id, updateRequest);
+        return Result.success("更新成功", updatedUser);
+    }
+  
+  
 
     @PostMapping("/password")
-
     public ResponseEntity<String> changePassword(@RequestBody ChangePasswordDTO dto) {
         // 此处可添加 JSR-303 参数校验，例如 @Valid
         userService.changePassword(dto);
@@ -64,20 +105,6 @@ public class UserController {
             return ResponseEntity.ok(user.getId());
         } else {
             return ResponseEntity.notFound().build();
-        }
-    }
-
-    @GetMapping("/hadooptest")
-    public String listFiles() throws IOException {
-        try {
-            List<LocatedFileStatus> fileList = hdfsUtil.listFiles("/");
-            StringBuilder sb = new StringBuilder();
-            for (LocatedFileStatus file : fileList) {
-                sb.append("文件路径：").append(file.getPath()).append("<br/>");
-            }
-            return sb.toString();
-        } catch (IOException e) {
-            return "查询失败：" + e.getMessage();
         }
     }
 }
