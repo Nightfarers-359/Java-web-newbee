@@ -1,10 +1,16 @@
 package com.project.platform.controller;
 
+import java.io.IOException;
+import java.util.List;
+
+import org.apache.hadoop.fs.LocatedFileStatus;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,8 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.project.platform.DTO.ChangePasswordDTO;
 import com.project.platform.entity.User;
 import com.project.platform.service.UserService;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
+import com.project.platform.util.HdfsUtil;
 
 @RestController
 @RequestMapping("/user")
@@ -24,6 +29,9 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
+
+    @Autowired
+    private HdfsUtil hdfsUtil;
 
     @PostMapping("/password")
 
@@ -56,6 +64,20 @@ public class UserController {
             return ResponseEntity.ok(user.getId());
         } else {
             return ResponseEntity.notFound().build();
+        }
+    }
+
+    @GetMapping("/hadooptest")
+    public String listFiles() throws IOException {
+        try {
+            List<LocatedFileStatus> fileList = hdfsUtil.listFiles("/");
+            StringBuilder sb = new StringBuilder();
+            for (LocatedFileStatus file : fileList) {
+                sb.append("文件路径：").append(file.getPath()).append("<br/>");
+            }
+            return sb.toString();
+        } catch (IOException e) {
+            return "查询失败：" + e.getMessage();
         }
     }
 }

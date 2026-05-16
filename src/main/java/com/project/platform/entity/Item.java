@@ -22,6 +22,8 @@ public class Item {
     private boolean isHidden;
     @TableField("owner_id")
     private Integer ownerId;
+    @TableField("stock")
+    private Integer stock;
     @TableField("created_at")
     private java.util.Date createdAt;
     @TableField("updated_at")
