@@ -30,7 +30,7 @@ public class BuyerController {
      * POST /order/add
      */
     @PostMapping("/add")
-    public Result addOrder(@Valid @RequestBody OrderRequestDTO orderDTO) {
+    public Result<String> addOrder(@Valid @RequestBody OrderRequestDTO orderDTO) {
         sellerService.addOrder(orderDTO);
         return Result.success("订单创建成功");
     }
@@ -40,7 +40,7 @@ public class BuyerController {
      * POST /order/cancel/{id}
      */
     @PostMapping("/cancel/{id}")
-    public Result cancelOrder(@PathVariable Integer id) {
+    public Result<String> cancelOrder(@PathVariable Integer id) {
         sellerService.cancelOrderById(id);
         return Result.success("订单取消成功");
     }
@@ -50,7 +50,7 @@ public class BuyerController {
      * GET /order/{id}
      */
     @GetMapping("/{id}")
-    public Result getOrderById(@PathVariable Integer id) {
+    public Result<OrderResponseDTO> getOrderById(@PathVariable Integer id) {
         OrderResponseDTO order = sellerService.getOrderById(id);
         if (order == null) {
             return Result.error("订单不存在");
@@ -63,7 +63,7 @@ public class BuyerController {
      * POST /order/pay
      */
     @PostMapping("/pay")
-    public Result payOrder(@Valid @RequestBody PaymentRequestDTO paymentDTO) {
+    public Result<String> payOrder(@Valid @RequestBody PaymentRequestDTO paymentDTO) {
         sellerService.payOrder(paymentDTO);
         return Result.success("支付成功");
     }
@@ -73,7 +73,7 @@ public class BuyerController {
      * POST /order/comment
      */
     @PostMapping("/comment")
-    public Result commentItem(@Valid @RequestBody CommentRequestDTO commentDTO) {
+    public Result<String> commentItem(@Valid @RequestBody CommentRequestDTO commentDTO) {
         sellerService.commentItem(commentDTO);
         return Result.success("评论成功");
     }
